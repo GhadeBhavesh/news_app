@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:news_app/components/home_ui.dart';
 import 'package:news_app/models/category_model.dart';
 import 'package:news_app/models/show_category.dart';
 import 'package:news_app/pages/Home_page.dart';
+import 'package:news_app/pages/account_page.dart';
 import 'package:news_app/pages/article_view.dart';
 import 'package:news_app/services/data.dart';
 import 'package:news_app/services/show_category_news.dart';
@@ -38,17 +40,53 @@ class _CategoryNewsState extends State<CategoryNews> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width * 1;
+    final height = MediaQuery.sizeOf(context).height * 1;
     return Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          automaticallyImplyLeading: false,
           title: Text(
-            widget.name,
-            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            "Category",
+            style: TextStyle(color: Colors.white),
           ),
-          centerTitle: true,
-          elevation: 0.0,
+          actions: [
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.manage_accounts_sharp,
+                  color: Colors.white,
+                )),
+            IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.notifications_on_rounded,
+                  color: Colors.white,
+                )),
+          ],
         ),
         body: SingleChildScrollView(
           child: Column(children: [
+            ClipPath(
+              clipper: TCustomCurvedEdges(),
+              child: Container(
+                color: Color.fromARGB(255, 0, 51, 255),
+                child: SizedBox(
+                  height: height * .2,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: -250,
+                        right: -300,
+                        child: Circleui(height, width),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
             Container(
               margin: EdgeInsets.only(left: 10.0),
               height: 70,

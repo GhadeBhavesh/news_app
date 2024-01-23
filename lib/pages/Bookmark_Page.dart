@@ -51,7 +51,8 @@ class _bookmarkPageState extends State<bookmarkPage> {
             child: Container(
               color: Color.fromARGB(255, 0, 51, 255),
               child: SizedBox(
-                height: height * .3,
+                height: height * .2,
+                width: double.infinity,
                 child: Stack(
                   children: [
                     Positioned(

@@ -96,7 +96,7 @@ class _HomeState extends State<Home> {
                       child: Container(
                         color: Color.fromARGB(255, 0, 51, 255),
                         child: SizedBox(
-                          height: height * .3,
+                          height: height * .2,
                           child: Stack(
                             children: [
                               Positioned(
