@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hidden_drawer_menu/controllers/simple_hidden_drawer_controller.dart';
 import 'package:news_app/auth/authentication_repository.dart';
 import 'package:news_app/components/Datepi.dart';
 import 'package:news_app/components/home_ui.dart';
-import 'package:news_app/components/NotificiedSettingPage.dart';
+import 'package:news_app/pages/Notification_page.dart';
+import 'package:news_app/components/notification_setting.dart';
 import 'package:news_app/pages/profile_page.dart';
 
 class Account extends StatefulWidget {
@@ -15,8 +17,6 @@ class Account extends StatefulWidget {
 class _AccountState extends State<Account> {
   @override
   Widget build(BuildContext context) {
-    // NewsviewModels newsviewModels = NewsviewModels();
-    // final width = MediaQuery.sizeOf(context).width * 1;
     final height = MediaQuery.sizeOf(context).height * 1;
     User? user = FirebaseAuth.instance.currentUser;
     return Scaffold(
@@ -24,8 +24,7 @@ class _AccountState extends State<Account> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        // surfaceTintColor: Colors.transparent,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
         title: Text(
           "Account",
           style: TextStyle(color: Colors.white),

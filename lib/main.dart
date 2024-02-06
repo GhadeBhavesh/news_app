@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:news_app/auth/authentication_repository.dart';
-import 'package:news_app/components/navbar.dart';
+import 'package:news_app/pages/HomeScreen.dart';
 import 'package:news_app/pages/welcome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +36,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'NewsApp',
       debugShowCheckedModeBanner: false,
-      home: showHome ? WelcomeScreen() : Navbar(),
+      home: showHome ? WelcomeScreen() : HomeScreen(),
     );
   }
 }

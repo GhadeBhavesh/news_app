@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_app/components/navbar.dart';
+import 'package:news_app/pages/HomeScreen.dart';
 import 'package:news_app/pages/welcome.dart';
 
 // import 'package:c/signup_email_password_fail.dart';
@@ -25,7 +27,7 @@ class AuthenticationRepository extends GetxController {
   _setInitialScreen(User? user) {
     user == null
         ? Get.offAll(() => const WelcomeScreen())
-        : Get.to(() => const Navbar());
+        : Get.to(() => HomeScreen());
   }
 
   Future<void> createUserWithEmailAndPassword(
@@ -83,7 +85,6 @@ class AuthenticationRepository extends GetxController {
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
             await googleSignInAccount.authentication;
-
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
           idToken: googleSignInAuthentication.idToken,
@@ -104,5 +105,37 @@ class AuthenticationRepository extends GetxController {
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  Future<String> _getSavedCategoryFromFirestore() async {
+    String savedCategory = '';
+    try {
+      // Access Firestore instance
+      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+      // Get the current user
+      final User? _user = AuthenticationRepository.instance.firebaseUser.value;
+
+      // Check if user is authenticated
+      if (_user != null) {
+        // Fetch the user's saved category from Firestore
+        final DocumentSnapshot documentSnapshot = await _firestore
+            .collection('categories')
+            .doc(_user.uid)
+            .collection('user_categories')
+            .doc(
+                'saved_category') // Assuming there's a document named 'saved_category' containing the saved category
+            .get();
+
+        // Check if the document exists
+        if (documentSnapshot.exists) {
+          // Retrieve the saved category from the document
+          savedCategory = documentSnapshot['category'] ?? '';
+        }
+      }
+    } catch (e) {
+      print("Error fetching saved category from Firestore: $e");
+    }
+    return savedCategory;
   }
 }

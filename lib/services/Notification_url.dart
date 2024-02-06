@@ -1,19 +1,22 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:news_app/models/slider_model.dart';
+import 'package:news_app/models/Notification_model.dart';
+import 'package:news_app/models/show_category.dart';
 
-class Sliders {
-  List<sliderModel> sliders = [];
+class Notification_url {
+  List<NotificationModel> categories = [];
 
-  Future<void> getSlider() async {
+  Future<void> getCategoriesNews(String category) async {
     String url =
-        "https://newsapi.org/v2/top-headlines?country=in&apiKey=866e37213c6b497eb3dfee12ac4e2b57";
+        "https://newsapi.org/v2/top-headlines?country=in&category=$category&apiKey=866e37213c6b497eb3dfee12ac4e2b57";
     var response = await http.get(Uri.parse(url));
+
     var jsonData = jsonDecode(response.body);
+
     if (jsonData['status'] == 'ok') {
       jsonData["articles"].forEach((element) {
         if (element["urlToImage"] != null && element['description'] != null) {
-          sliderModel slidermodel = sliderModel(
+          NotificationModel categoryModel = NotificationModel(
             title: element["title"],
             description: element["description"],
             url: element["url"],
@@ -21,7 +24,7 @@ class Sliders {
             content: element["content"],
             author: element["author"],
           );
-          sliders.add(slidermodel);
+          categories.add(categoryModel);
         }
       });
     }

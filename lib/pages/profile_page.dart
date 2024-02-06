@@ -7,8 +7,6 @@ class Profile_page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
-    // final width = MediaQuery.sizeOf(context).width * 1;
-    // final height = MediaQuery.sizeOf(context).height * 1;
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: true,

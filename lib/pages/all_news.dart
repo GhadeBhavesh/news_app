@@ -8,7 +8,9 @@ import 'package:news_app/services/slider_data.dart';
 
 class AllNews extends StatefulWidget {
   String news;
-  AllNews({required this.news});
+
+  String blogUrl;
+  AllNews({required this.news, required this.blogUrl});
 
   @override
   State<AllNews> createState() => _AllNewsState();

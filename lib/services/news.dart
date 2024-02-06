@@ -9,7 +9,6 @@ class News {
     String url =
         "https://newsapi.org/v2/top-headlines?country=in&apiKey=866e37213c6b497eb3dfee12ac4e2b57";
     var response = await http.get(Uri.parse(url));
-
     var jsonData = jsonDecode(response.body);
 
     if (jsonData['status'] == 'ok') {
