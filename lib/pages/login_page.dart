@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/pages/HomeScreen.dart';
 import 'package:news_app/pages/sign_in_page.dart';
-import 'package:news_app/components/navbar.dart';
+import 'package:news_app/Ex/navbar.dart';
 import 'package:get/get.dart';
 import 'package:news_app/auth/sign_up_controller.dart';
 import 'package:news_app/auth/authentication_repository.dart';
@@ -95,7 +96,8 @@ class _login_pageState extends State<login_page> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => Navbar()));
+                                            builder: (context) =>
+                                                HomeScreen()));
                                   },
                                   child: const Text("Forget Password ?")),
                             ),
@@ -154,7 +156,7 @@ class _login_pageState extends State<login_page> {
                                       Navigator.of(context)
                                           .pushReplacement(MaterialPageRoute(
                                         builder: (context) {
-                                          return Navbar();
+                                          return HomeScreen();
                                         },
                                       ));
                                     }

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hidden_drawer_menu/controllers/simple_hidden_drawer_controller.dart';
 import 'package:news_app/auth/authentication_repository.dart';
-import 'package:news_app/components/Datepi.dart';
+import 'package:news_app/Ex/Datepi.dart';
 import 'package:news_app/components/home_ui.dart';
-import 'package:news_app/pages/Notification_page.dart';
-import 'package:news_app/components/notification_setting.dart';
+import 'package:news_app/Ex/Notification_page.dart';
+import 'package:news_app/Ex/notification_setting.dart';
 import 'package:news_app/pages/profile_page.dart';
 
 class Account extends StatefulWidget {
@@ -94,7 +94,7 @@ class _AccountState extends State<Account> {
             ),
             GestureDetector(
               onTap: () {
-                Get.off(NotificiedSettingPage());
+                Get.off(BackButton());
               },
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -110,7 +110,7 @@ class _AccountState extends State<Account> {
             ),
             GestureDetector(
               onTap: () {
-                Get.to(() => Datepi());
+                Get.to(() => BackButton());
               },
               child: Padding(
                 padding: const EdgeInsets.all(16.0),

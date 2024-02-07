@@ -18,14 +18,14 @@ Drawer sideDrawer(NewsController newsController) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  controller.cName != ''
-                      ? Text("Country = ${controller.cName.value}")
-                      : Container(),
-                  SizedBox(height: 10),
-                  controller.category != ''
-                      ? Text("Category = ${controller.category.value}")
-                      : Container(),
-                  SizedBox(height: 20),
+                  // controller.cName != ''
+                  //     ? Text("Country = ${controller.cName.value}")
+                  //     : Container(),
+                  // SizedBox(height: 10),
+                  // controller.category != ''
+                  //     ? Text("Category = ${controller.category.value}")
+                  //     : Container(),
+                  // SizedBox(height: 20),
                 ],
               );
             },
@@ -64,6 +64,7 @@ Drawer sideDrawer(NewsController newsController) {
             for (int i = 0; i < listOfCountry.length; i++)
               dropDownList(
                 call: () {
+                  Get.back();
                   newsController.country.value = listOfCountry[i]['code']!;
                   newsController.cName.value =
                       listOfCountry[i]['name']!.toUpperCase();
@@ -80,6 +81,7 @@ Drawer sideDrawer(NewsController newsController) {
             for (int i = 0; i < listOfCategory.length; i++)
               dropDownList(
                   call: () {
+                    Get.back();
                     newsController.category.value = listOfCategory[i]['code']!;
                     newsController.getNews();
                     // newsController.update();
@@ -93,6 +95,7 @@ Drawer sideDrawer(NewsController newsController) {
             for (int i = 0; i < listOfNewsChannel.length; i++)
               dropDownList(
                 call: () {
+                  Get.back();
                   newsController.getNews(channel: listOfNewsChannel[i]['code']);
                   // newsController.update();
                 },
@@ -112,7 +115,6 @@ Drawer sideDrawer(NewsController newsController) {
                   ));
             },
             child: ListTile(title: Text("Category"))),
-        ListTile(title: Text("Close"), onTap: () => Get.back()),
       ],
     ),
   );

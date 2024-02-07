@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:news_app/components/navbar.dart';
+import 'package:news_app/Ex/navbar.dart';
 import 'package:news_app/pages/HomeScreen.dart';
 import 'package:news_app/pages/welcome.dart';
 
@@ -38,7 +38,7 @@ class AuthenticationRepository extends GetxController {
         password: userPass,
       );
       firebaseUser.value != null
-          ? Get.offAll(() => const Navbar())
+          ? Get.offAll(() => HomeScreen())
           : Get.to(() => const WelcomeScreen());
     } on FirebaseAuthException catch (e) {
       Get.snackbar("About user", "User message",
