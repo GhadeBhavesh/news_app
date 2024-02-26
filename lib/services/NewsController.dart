@@ -3,8 +3,12 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:news_app/model/ArticalModel.dart';
 import 'package:news_app/model/NewsModel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewsController extends GetxController {
+  List<int> bookmarkedIndexes = [];
+  CollectionReference newsCollection =
+      FirebaseFirestore.instance.collection('news');
   List<Article> news = <Article>[];
   ScrollController scrollController = ScrollController();
   RxBool notFound = false.obs;
@@ -19,9 +23,32 @@ class NewsController extends GetxController {
   RxInt pageSize = 10.obs;
   String baseApi = "https://newsapi.org/v2/top-headlines?";
 
+  getNewsFromFirestore() async {
+    try {
+      QuerySnapshot querySnapshot = await newsCollection.get();
+      List<Article> fetchedNews = querySnapshot.docs
+          .map((doc) => Article.fromJson(doc.data()
+              as Map<String, dynamic>)) // Cast to Map<String, dynamic>
+          .toList();
+      news = fetchedNews;
+      update();
+    } catch (e) {
+      print("Error fetching news: $e");
+    }
+  }
+
+  void toggleBookmark(int index) {
+    if (bookmarkedIndexes.contains(index)) {
+      bookmarkedIndexes.remove(index);
+    } else {
+      bookmarkedIndexes.add(index);
+    }
+    update(); // Call update to notify GetBuilder of changes
+  }
+
   @override
   void onInit() {
-    scrollController = new ScrollController()..addListener(_scrollListener);
+    // scrollController = new ScrollController()..addListener(_scrollListener);
     getNews();
     super.onInit();
   }
@@ -32,13 +59,13 @@ class NewsController extends GetxController {
     update();
   }
 
-  _scrollListener() {
-    if (scrollController.position.pixels ==
-        scrollController.position.maxScrollExtent) {
-      isLoading.value = true;
-      getNews();
-    }
-  }
+  // _scrollListener() {
+  //   if (scrollController.position.pixels ==
+  //       scrollController.position.maxScrollExtent) {
+  //     isLoading.value = true;
+  //     getNews();
+  //   }
+  // }
 
   getNews({channel = '', searchKey = '', reload = false}) async {
     notFound.value = false;

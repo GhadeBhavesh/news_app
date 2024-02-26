@@ -1,137 +1,301 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:news_app/components/dropDownList.dart';
 import 'package:news_app/components/sideDrawer.dart';
+import 'package:news_app/model/utils.dart';
 import 'package:news_app/pages/ViewNews.dart';
+import 'package:news_app/pages/bookmark.dart';
+import 'package:news_app/pages/category_Page.dart';
 import "package:news_app/services/NewsController.dart";
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   NewsController newsController = Get.put(NewsController());
+  List<int> bookmarkedIndexes = []; // List to store bookmarked news indexes
+
+  bool _isCountryExpanded = false;
+  bool _isCategoryExpanded = false;
+  bool _isChannelExpanded = false;
+  String dropdownValue = 'in';
+  // void toggleBookmark(int index) {
+  //   newsController.toggleBookmark(index);
+  // }
+
+// Inside your GestureDetector or IconButton in the news card
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("News"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              newsController.country.value = '';
-              newsController.category.value = '';
-              newsController.findNews.value = '';
-              newsController.cName.value = '';
-              newsController.getNews(reload: true);
-              newsController.update();
-            },
-            icon: Icon(Icons.refresh),
-          ),
-          GetBuilder<NewsController>(
-            builder: (controller) => Switch(
-              value: controller.isSwitched == true ? true : false,
-              onChanged: (value) => controller.changeTheme(value),
-              activeTrackColor: Colors.yellow,
-              activeColor: Colors.red,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text("News"),
+          actions: [
+            IconButton(
+              onPressed: () {
+                newsController.country.value = '';
+                newsController.category.value = '';
+                newsController.findNews.value = '';
+                newsController.cName.value = '';
+                newsController.getNews(reload: true);
+                newsController.update();
+              },
+              icon: Icon(Icons.refresh),
             ),
-            init: NewsController(),
+            GetBuilder<NewsController>(
+              builder: (controller) => Switch(
+                value: controller.isSwitched == true ? true : false,
+                onChanged: (value) => controller.changeTheme(value),
+                activeTrackColor: Colors.yellow,
+                activeColor: Colors.red,
+              ),
+              init: NewsController(),
+            ),
+          ],
+        ),
+        drawer: sideDrawer(newsController),
+        body: Column(children: [
+          Container(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 5),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        hintText: "Search any Thing",
+                      ),
+                      scrollPadding: EdgeInsets.all(5),
+                      onChanged: (val) {
+                        newsController.findNews.value = val;
+                        newsController.update();
+                      },
+                    ),
+                  ),
+                ),
+                MaterialButton(
+                  child: Text("Search"),
+                  onPressed: () async {
+                    newsController.getNews(
+                      searchKey: newsController.findNews.value,
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      drawer: sideDrawer(newsController),
-      body: GetBuilder<NewsController>(
-        builder: (controller) {
-          return controller.notFound.value
-              ? Center(child: Text("Not Found", style: TextStyle(fontSize: 30)))
-              : controller.news.length == 0
-                  ? Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      controller: controller.scrollController,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: GestureDetector(
-                                  onTap: () => Get.to(ViewNews(
-                                      newsUrl: controller.news[index].url)),
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 15),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(30)),
-                                    child: Column(
-                                      children: [
-                                        Stack(children: [
-                                          controller.news[index].urlToImage ==
-                                                  null
-                                              ? Container()
-                                              : ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: CachedNetworkImage(
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        Container(
-                                                            child:
-                                                                CircularProgressIndicator()),
-                                                    errorWidget:
-                                                        (context, url, error) =>
+          DropdownButton<String>(
+            value: dropdownValue,
+            onChanged: (String? newValue) {
+              setState(() {
+                newsController.getNews();
+              });
+            },
+            items: listOfCountry.map<DropdownMenuItem<String>>((country) {
+              return DropdownMenuItem<String>(
+                value: country['code']!,
+                child: Text(country['name']!.toUpperCase()),
+              );
+            }).toList(),
+          ),
+          ExpansionTile(
+            title: Text("Category"),
+            onExpansionChanged: (expanded) {
+              setState(() {
+                _isCategoryExpanded = expanded;
+              });
+            },
+            children: [
+              for (int i = 0; i < listOfCategory.length; i++)
+                dropDownList(
+                  call: () {
+                    Get.back();
+                    newsController.category.value = listOfCategory[i]['code']!;
+                    newsController.getNews();
+                    setState(() {
+                      _isCountryExpanded = false;
+                    });
+                  },
+                  name: listOfCategory[i]['name']!.toUpperCase(),
+                )
+            ],
+          ),
+          ExpansionTile(
+            title: Text("Channel"),
+            onExpansionChanged: (expanded) {
+              setState(() {
+                _isChannelExpanded = expanded;
+              });
+            },
+            children: [
+              for (int i = 0; i < listOfNewsChannel.length; i++)
+                dropDownList(
+                  call: () {
+                    Get.back();
+                    newsController.getNews(
+                      channel: listOfNewsChannel[i]['code'],
+                    );
+                    setState(() {
+                      _isChannelExpanded = false;
+                    });
+                  },
+                  name: listOfNewsChannel[i]['name']!.toUpperCase(),
+                ),
+            ],
+          ),
+          Expanded(
+            child: GetBuilder<NewsController>(
+              builder: (controller) {
+                return controller.notFound.value
+                    ? Center(
+                        child: Text(
+                          "Not Found",
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      )
+                    : controller.news.length == 0
+                        ? Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                            controller: controller.scrollController,
+                            itemCount: controller.news.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: Card(
+                                  elevation: 5,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: GestureDetector(
+                                    onTap: () => Get.to(
+                                      ViewNews(
+                                        newsUrl: controller.news[index].url,
+                                      ),
+                                    ),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                        horizontal: 15,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              controller.news[index]
+                                                          .urlToImage ==
+                                                      null
+                                                  ? Container()
+                                                  : ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                      child: CachedNetworkImage(
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                Container(
+                                                          child:
+                                                              CircularProgressIndicator(),
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
                                                             Icon(Icons.error),
-                                                    imageUrl: controller
-                                                            .news[index]
-                                                            .urlToImage ??
-                                                        '',
+                                                        imageUrl: controller
+                                                                .news[index]
+                                                                .urlToImage ??
+                                                            '',
+                                                      ),
+                                                    ),
+                                              Positioned(
+                                                bottom: 8,
+                                                right: 8,
+                                                child: Card(
+                                                  elevation: 0,
+                                                  color: Theme.of(context)
+                                                      .primaryColor
+                                                      .withOpacity(0.8),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 8,
+                                                    ),
+                                                    child: Text(
+                                                      "${controller.news[index].source.name}",
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .subtitle2,
+                                                    ),
                                                   ),
                                                 ),
-                                          Positioned(
-                                            bottom: 8,
-                                            right: 8,
-                                            child: Card(
-                                              elevation: 0,
-                                              color: Theme.of(context)
-                                                  .primaryColor
-                                                  .withOpacity(0.8),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 8),
-                                                child: Text(
-                                                    "${controller.news[index].source.name}",
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle2),
                                               ),
+                                              Positioned(
+                                                top: 8,
+                                                right: 8,
+                                                child: IconButton(
+                                                  icon: Icon(
+                                                    // Check if the current index is bookmarked
+                                                    bookmarkedIndexes
+                                                            .contains(index)
+                                                        ? Icons.bookmark
+                                                        : Icons.bookmark_border,
+                                                    // Change the icon color to red if bookmarked
+                                                    color: bookmarkedIndexes
+                                                            .contains(index)
+                                                        ? Colors.red
+                                                        : null,
+                                                  ),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      controller.toggleBookmark(
+                                                          index);
+                                                      // Toggle bookmark status
+                                                      if (bookmarkedIndexes
+                                                          .contains(index)) {
+                                                        bookmarkedIndexes
+                                                            .remove(index);
+                                                      } else {
+                                                        bookmarkedIndexes
+                                                            .add(index);
+                                                      }
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Divider(),
+                                          Text(
+                                            "${controller.news[index].title}",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
                                             ),
                                           ),
-                                        ]),
-                                        Divider(),
-                                        Text("${controller.news[index].title}",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18))
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            index == controller.news.length - 1 &&
-                                    controller.isLoading == true
-                                ? Center(child: CircularProgressIndicator())
-                                : SizedBox(),
-                          ],
-                        );
-                      },
-                      itemCount: controller.news.length,
-                    );
-        },
-        init: NewsController(),
-      ),
-    );
+                              );
+                            },
+                            // itemCount: controller.news.length,
+                          );
+              },
+              init: NewsController(),
+            ),
+          ),
+        ]));
+  }
+
+  void updateNewsCategory(String selectedValue) {
+    newsController.category.value = selectedValue;
+    newsController.getNews();
   }
 }

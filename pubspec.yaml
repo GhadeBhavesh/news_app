@@ -59,6 +59,7 @@ dependencies:
   flutter_local_notifications: ^16.3.2
   hidden_drawer_menu: ^3.0.1
   cloud_firestore: ^4.15.2
+  firebase_database: ^10.4.5
   
 dev_dependencies:
   flutter_test:
@@ -67,7 +68,7 @@ dev_dependencies:
 
 flutter_native_splash:
  image: assets/splash_pic.jpg
- color: "#42a5f5"
+ color: "#ffffff"
  android: true
 #  fill: true
 
