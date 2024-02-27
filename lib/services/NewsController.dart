@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -7,8 +8,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewsController extends GetxController {
   List<int> bookmarkedIndexes = [];
-  CollectionReference newsCollection =
-      FirebaseFirestore.instance.collection('news');
+  // late NewsController newsController;
+  final DatabaseReference _newsRef =
+      FirebaseDatabase.instance.reference().child('news');
+
+  Future<Object?> getSelectedCategory() async {
+    try {
+      DataSnapshot dataSnapshot =
+          (await _newsRef.child('selectedCategory').once()) as DataSnapshot;
+      return dataSnapshot.value;
+    } catch (e) {
+      print("Error getting selected category: $e");
+      return null;
+    }
+  }
+
+  Future<Object?> getSelectedChannel() async {
+    try {
+      DataSnapshot dataSnapshot =
+          (await _newsRef.child('selectedChannel').once()) as DataSnapshot;
+      return dataSnapshot.value;
+    } catch (e) {
+      print("Error getting selected channel: $e");
+      return null;
+    }
+  }
+
   List<Article> news = <Article>[];
   ScrollController scrollController = ScrollController();
   RxBool notFound = false.obs;
@@ -22,20 +47,6 @@ class NewsController extends GetxController {
   dynamic isPageLoading = false.obs;
   RxInt pageSize = 10.obs;
   String baseApi = "https://newsapi.org/v2/top-headlines?";
-
-  getNewsFromFirestore() async {
-    try {
-      QuerySnapshot querySnapshot = await newsCollection.get();
-      List<Article> fetchedNews = querySnapshot.docs
-          .map((doc) => Article.fromJson(doc.data()
-              as Map<String, dynamic>)) // Cast to Map<String, dynamic>
-          .toList();
-      news = fetchedNews;
-      update();
-    } catch (e) {
-      print("Error fetching news: $e");
-    }
-  }
 
   void toggleBookmark(int index) {
     if (bookmarkedIndexes.contains(index)) {

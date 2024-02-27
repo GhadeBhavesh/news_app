@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +10,8 @@ import 'package:news_app/pages/ViewNews.dart';
 import 'package:news_app/pages/bookmark.dart';
 import 'package:news_app/pages/category_Page.dart';
 import "package:news_app/services/NewsController.dart";
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,6 +19,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final DatabaseReference _categoryRef =
+      FirebaseDatabase.instance.reference().child('selectedCategory');
+  final DatabaseReference _channelRef =
+      FirebaseDatabase.instance.reference().child('selectedChannel');
   NewsController newsController = Get.put(NewsController());
   List<int> bookmarkedIndexes = []; // List to store bookmarked news indexes
 
@@ -22,6 +30,39 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isCategoryExpanded = false;
   bool _isChannelExpanded = false;
   String dropdownValue = 'in';
+  void saveSelectedCategory(String category) {
+    _categoryRef.set(category);
+  }
+
+  // Method to store selected channel in Firebase
+  void saveSelectedChannel(String channel) {
+    _channelRef.set(channel);
+  }
+
+  Future<String?> getSelectedCategory() async {
+    String? selectedCategory;
+    try {
+      DataSnapshot snapshot = (await _categoryRef.once()) as DataSnapshot;
+      selectedCategory = snapshot.value as String?;
+    } catch (error) {
+      print("Error getting selected category: $error");
+    }
+    return selectedCategory;
+  }
+
+  Future<String?> getSelectedChannel() async {
+    String? selectedChannel;
+    try {
+      DataSnapshot snapshot = (await _channelRef.once()) as DataSnapshot;
+      selectedChannel = snapshot.value as String?;
+    } catch (error) {
+      print("Error getting selected channel: $error");
+    }
+    return selectedChannel;
+  }
+
+  // Method to retrieve selected channel from Firebase
+
   // void toggleBookmark(int index) {
   //   newsController.toggleBookmark(index);
   // }
@@ -88,23 +129,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          DropdownButton<String>(
-            value: dropdownValue,
-            onChanged: (String? newValue) {
-              setState(() {
-                newsController.getNews();
-              });
-            },
-            items: listOfCountry.map<DropdownMenuItem<String>>((country) {
-              return DropdownMenuItem<String>(
-                value: country['code']!,
-                child: Text(country['name']!.toUpperCase()),
-              );
-            }).toList(),
-          ),
           ExpansionTile(
             title: Text("Category"),
-            onExpansionChanged: (expanded) {
+            onExpansionChanged: (expanded) async {
+              if (expanded) {
+                String? selectedCategory = (await getSelectedCategory());
+                if (selectedCategory != null) {
+                  // Update UI with selected category
+                }
+              }
               setState(() {
                 _isCategoryExpanded = expanded;
               });
@@ -116,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Get.back();
                     newsController.category.value = listOfCategory[i]['code']!;
                     newsController.getNews();
+                    saveSelectedCategory(listOfCategory[i]['code']!);
                     setState(() {
                       _isCountryExpanded = false;
                     });
@@ -126,7 +160,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ExpansionTile(
             title: Text("Channel"),
-            onExpansionChanged: (expanded) {
+            onExpansionChanged: (expanded) async {
+              if (expanded) {
+                String? selectedChannel = (await getSelectedChannel());
+                if (selectedChannel != null) {
+                  // Update UI with selected channel
+                }
+              }
               setState(() {
                 _isChannelExpanded = expanded;
               });
@@ -139,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     newsController.getNews(
                       channel: listOfNewsChannel[i]['code'],
                     );
+                    saveSelectedChannel(listOfNewsChannel[i]['code']!);
                     setState(() {
                       _isChannelExpanded = false;
                     });
@@ -230,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       "${controller.news[index].source.name}",
                                                       style: Theme.of(context)
                                                           .textTheme
-                                                          .subtitle2,
+                                                          .titleSmall,
                                                     ),
                                                   ),
                                                 ),

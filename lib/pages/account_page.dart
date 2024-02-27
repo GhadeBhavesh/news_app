@@ -24,7 +24,7 @@ class _AccountState extends State<Account> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: true,
+        // automaticallyImplyLeading: true,
         title: Text(
           "Account",
           style: TextStyle(color: Colors.white),
@@ -40,7 +40,7 @@ class _AccountState extends State<Account> {
               child: Container(
                 color: Color.fromARGB(255, 0, 51, 255),
                 child: SizedBox(
-                  height: height * .2,
+                  height: height * .3,
                   child: Stack(
                     children: [
                       Column(
