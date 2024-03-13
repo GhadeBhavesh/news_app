@@ -43,7 +43,7 @@ dependencies:
   bottom_navy_bar: ^6.0.0
   flutter_spinkit: ^5.2.0
   flutter_launcher_icons: ^0.13.1
-  google_fonts: ^6.1.0
+  google_fonts: ^5.1.0
   http: ^1.1.2
   carousel_slider: ^4.2.1
   cached_network_image: ^3.3.0
@@ -61,14 +61,16 @@ dependencies:
   cloud_firestore: ^4.15.2
   firebase_database: ^10.4.5
   autocomplete_textfield: ^2.0.1
-  
+  flutter_zoom_drawer: ^3.2.0
+  badges: ^3.1.2
+  hive_flutter: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_native_splash: ^2.3.10
 
 flutter_native_splash:
- image: assets/splash_pic.jpg
+ image: assets/icon_splash.png
  color: "#ffffff"
  android: true
 #  fill: true

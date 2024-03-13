@@ -3,8 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_app/auth/sign_up_controller.dart';
-import 'package:news_app/Ex/navbar.dart';
-import 'package:news_app/pages/HomeScreen.dart';
+import 'package:news_app/main.dart';
 import 'package:news_app/pages/login_page.dart';
 import 'package:news_app/auth/authentication_repository.dart';
 
@@ -219,7 +218,7 @@ class _SignInPageState extends State<SignInPage> {
                                       Navigator.of(context)
                                           .pushReplacement(MaterialPageRoute(
                                         builder: (context) {
-                                          return HomeScreen();
+                                          return Draw();
                                         },
                                       ));
                                     }

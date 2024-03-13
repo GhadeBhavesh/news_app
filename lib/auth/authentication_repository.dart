@@ -3,11 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:news_app/Ex/navbar.dart';
-import 'package:news_app/pages/HomeScreen.dart';
+import 'package:news_app/main.dart';
 import 'package:news_app/pages/welcome.dart';
 
-// import 'package:c/signup_email_password_fail.dart';
 class AuthenticationRepository extends GetxController {
   static AuthenticationRepository get instance => Get.find();
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -27,7 +25,7 @@ class AuthenticationRepository extends GetxController {
   _setInitialScreen(User? user) {
     user == null
         ? Get.offAll(() => const WelcomeScreen())
-        : Get.to(() => HomeScreen());
+        : Get.to(() => Draw());
   }
 
   Future<void> createUserWithEmailAndPassword(
@@ -38,7 +36,7 @@ class AuthenticationRepository extends GetxController {
         password: userPass,
       );
       firebaseUser.value != null
-          ? Get.offAll(() => HomeScreen())
+          ? Get.offAll(() => Draw())
           : Get.to(() => const WelcomeScreen());
     } on FirebaseAuthException catch (e) {
       Get.snackbar("About user", "User message",

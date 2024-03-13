@@ -5,13 +5,15 @@ part 'ArticalModel.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Article {
-  Article(this.source, this.author, this.title, this.description, this.url, this.urlToImage, this.publishedAt, this.content);
+  Article(this.source, this.author, this.title, this.description, this.url,
+      this.urlToImage, this.publishedAt, this.content);
 
   String? author, description, urlToImage, content;
   String title, url, publishedAt;
   Source source;
-
-  factory Article.fromJson(Map<String, dynamic> json) => _$ArticleFromJson(json);
+  // late bool isBookmarked;
+  factory Article.fromJson(Map<String, dynamic> json) =>
+      _$ArticleFromJson(json);
 
   Map<String, dynamic> toJson() => _$ArticleToJson(this);
 }

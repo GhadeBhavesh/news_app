@@ -9,7 +9,21 @@ class ViewNews extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(centerTitle: true, title: Text("News")),
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text("Detail"),
+              Text(
+                "News",
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+          centerTitle: true,
+          elevation: 0.0,
+        ),
         body: Container(
           child: WebView(
             initialUrl: newsUrl,

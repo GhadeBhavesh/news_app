@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
-import 'package:hidden_drawer_menu/controllers/simple_hidden_drawer_controller.dart';
 import 'package:news_app/auth/authentication_repository.dart';
-import 'package:news_app/Ex/Datepi.dart';
 import 'package:news_app/components/home_ui.dart';
-import 'package:news_app/Ex/Notification_page.dart';
-import 'package:news_app/Ex/notification_setting.dart';
+import 'package:news_app/pages/lang_page.dart';
 import 'package:news_app/pages/profile_page.dart';
+import 'package:news_app/pages/text_size.dart';
 
 class Account extends StatefulWidget {
   @override
@@ -15,6 +15,10 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
+  final DatabaseReference ref = FirebaseDatabase()
+      .reference()
+      .child("value_text"); // Replace with your database reference path
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.sizeOf(context).height * 1;
@@ -29,6 +33,12 @@ class _AccountState extends State<Account> {
           "Account",
           style: TextStyle(color: Colors.white),
         ),
+        leading: IconButton(
+            onPressed: () => ZoomDrawer.of(context)!.toggle(),
+            icon: Icon(
+              Icons.menu,
+              color: Colors.white,
+            )),
       ),
       body: SingleChildScrollView(
           child: Column(
@@ -40,13 +50,16 @@ class _AccountState extends State<Account> {
               child: Container(
                 color: Color.fromARGB(255, 0, 51, 255),
                 child: SizedBox(
-                  height: height * .3,
+                  height: height * .22,
                   child: Stack(
                     children: [
                       Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            SizedBox(
+                              height: 60,
+                            ),
                             ListTile(
                               leading: ClipRRect(
                                 borderRadius: BorderRadius.circular(50),
@@ -117,6 +130,40 @@ class _AccountState extends State<Account> {
                 child: ListTile(
                   title: Text("Date"),
                   subtitle: Text("Set date for news"),
+                  leading: Icon(
+                    Icons.notifications_none_sharp,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Get.to(() => Lang_Page());
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListTile(
+                  title: Text("Language"),
+                  subtitle: Text("Set language for News"),
+                  leading: Icon(
+                    Icons.notifications_none_sharp,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Get.to(() => TextSizePage(
+                      ref: ref,
+                    ));
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ListTile(
+                  title: Text("Font  Size"),
+                  subtitle: Text("Set Text size for News"),
                   leading: Icon(
                     Icons.notifications_none_sharp,
                     color: Colors.blue,

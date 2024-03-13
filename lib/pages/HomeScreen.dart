@@ -1,17 +1,16 @@
 import 'dart:async';
-
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:news_app/components/dropDownList.dart';
-import 'package:news_app/components/sideDrawer.dart';
 import 'package:news_app/model/utils.dart';
 import 'package:news_app/pages/ViewNews.dart';
 import 'package:news_app/pages/bookmark.dart';
-import 'package:news_app/pages/category_Page.dart';
 import "package:news_app/services/NewsController.dart";
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -19,62 +18,121 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final DatabaseReference _categoryRef =
-      FirebaseDatabase.instance.reference().child('selectedCategory');
-  final DatabaseReference _channelRef =
-      FirebaseDatabase.instance.reference().child('selectedChannel');
   NewsController newsController = Get.put(NewsController());
-  List<int> bookmarkedIndexes = []; // List to store bookmarked news indexes
+  final _databaseRef = FirebaseDatabase.instance
+      .reference()
+      .child('bookmarks'); // Change 'bookmarks' to your desired path
+
+  @override
+  void initState() {
+    super.initState();
+    getStoredCategory().then((category) {
+      if (category != null) {
+        setState(() {
+          dropdownValue =
+              category; // Update dropdownValue when category is retrieved
+        });
+        dropdownValue = category;
+        newsController.category.value = category;
+        newsController.getNews(); // Update news based on retrieved category
+        updateNewsCategory(getStoredCategory() as String);
+      }
+    });
+    // getStoredChannel().then((channel) {
+    //   if (channel != null) {
+    //     dropdownValue = channel;
+    //     newsController.category.value = channel;
+    //     newsController.getNews();
+    //     updateNewsChannel(getStoredChannel() as String);
+    //   }
+    // });
+  }
+
+  Future<void> _saveBookmark(news) async {
+    try {
+      final key =
+          _databaseRef.push().key; // Generate a unique key for the bookmark
+      await _databaseRef.child(key!).set({
+        'title': news.title,
+        'imageUrl': news.imageUrl,
+        // Add other relevant fields as needed
+      });
+    } catch (error) {
+      print('Error saving bookmark: $error');
+    }
+  }
+
+  Future<void> _removeBookmark(String title) async {
+    try {
+      // Query bookmarks based on title (modify based on your data structure)
+      final snapshot =
+          await _databaseRef.orderByChild('title').equalTo(title).get();
+    } catch (error) {
+      print('Error removing bookmark: $error');
+    }
+  }
 
   bool _isCountryExpanded = false;
   bool _isCategoryExpanded = false;
   bool _isChannelExpanded = false;
   String dropdownValue = 'in';
-  void saveSelectedCategory(String category) {
-    _categoryRef.set(category);
+  Future<String?> getStoredCategory() async {
+    // Replace with your database access code (e.g., Firebase Realtime Database)
+    final snapshot = await FirebaseDatabase.instance
+        .reference()
+        .child('selectedCategory')
+        .get();
+    return snapshot.value as String?;
   }
 
-  // Method to store selected channel in Firebase
-  void saveSelectedChannel(String channel) {
-    _channelRef.set(channel);
+  Future<String?> getStoredChannel() async {
+    // Replace with your database access code (e.g., Firebase Realtime Database)
+    final snapshot = await FirebaseDatabase.instance
+        .reference()
+        .child('selectedChannel')
+        .get();
+    return snapshot.value as String?;
   }
 
-  Future<String?> getSelectedCategory() async {
-    String? selectedCategory;
-    try {
-      DataSnapshot snapshot = (await _categoryRef.once()) as DataSnapshot;
-      selectedCategory = snapshot.value as String?;
-    } catch (error) {
-      print("Error getting selected category: $error");
-    }
-    return selectedCategory;
+  void updateNewsCategory(String selectedValue) {
+    newsController.category.value = selectedValue;
+    newsController.getNews();
   }
 
-  Future<String?> getSelectedChannel() async {
-    String? selectedChannel;
-    try {
-      DataSnapshot snapshot = (await _channelRef.once()) as DataSnapshot;
-      selectedChannel = snapshot.value as String?;
-    } catch (error) {
-      print("Error getting selected channel: $error");
-    }
-    return selectedChannel;
+  void updateNewsChannel(String selectedValue) {
+    newsController.cName.value = selectedValue;
+    newsController.getNews();
   }
-
-  // Method to retrieve selected channel from Firebase
-
-  // void toggleBookmark(int index) {
-  //   newsController.toggleBookmark(index);
-  // }
 
 // Inside your GestureDetector or IconButton in the news card
+  void saveSelectedCategory(String categoryCode) async {
+    // Replace with your database access code (e.g., Firebase Realtime Database)
+    await FirebaseDatabase.instance
+        .reference()
+        .child('selectedCategory')
+        .set(categoryCode);
+  }
+
+  void saveSelectedChannel(String channelCode) async {
+    // Replace with your database access code (e.g., Firebase Realtime Database)
+    await FirebaseDatabase.instance
+        .reference()
+        .child('selectedChannel')
+        .set(channelCode);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final _databaseRef = FirebaseDatabase.instance
+        .reference()
+        .child('bookmarks'); // Change 'bookmarks'
     return Scaffold(
         appBar: AppBar(
-          centerTitle: true,
-          title: Text("News"),
+          centerTitle: false,
+          title: Text("Headlines"),
+          leading: IconButton(
+              onPressed: () => ZoomDrawer.of(context)!.toggle(),
+              icon: Icon(Icons.menu)),
           actions: [
             IconButton(
               onPressed: () {
@@ -98,7 +156,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        drawer: sideDrawer(newsController),
         body: Column(children: [
           Container(
             child: Row(
@@ -130,14 +187,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           ExpansionTile(
-            title: Text("Category"),
+            title: Text("Category :$dropdownValue"),
             onExpansionChanged: (expanded) async {
-              if (expanded) {
-                String? selectedCategory = (await getSelectedCategory());
-                if (selectedCategory != null) {
-                  // Update UI with selected category
-                }
-              }
               setState(() {
                 _isCategoryExpanded = expanded;
               });
@@ -150,44 +201,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     newsController.category.value = listOfCategory[i]['code']!;
                     newsController.getNews();
                     saveSelectedCategory(listOfCategory[i]['code']!);
+                    updateNewsCategory(listOfCategory[i]['code']!);
+                    dropdownValue = listOfCategory[i]
+                        ['code']!; // Call to store the category
                     setState(() {
                       _isCountryExpanded = false;
                     });
                   },
                   name: listOfCategory[i]['name']!.toUpperCase(),
-                )
-            ],
-          ),
-          ExpansionTile(
-            title: Text("Channel"),
-            onExpansionChanged: (expanded) async {
-              if (expanded) {
-                String? selectedChannel = (await getSelectedChannel());
-                if (selectedChannel != null) {
-                  // Update UI with selected channel
-                }
-              }
-              setState(() {
-                _isChannelExpanded = expanded;
-              });
-            },
-            children: [
-              for (int i = 0; i < listOfNewsChannel.length; i++)
-                dropDownList(
-                  call: () {
-                    Get.back();
-                    newsController.getNews(
-                      channel: listOfNewsChannel[i]['code'],
-                    );
-                    saveSelectedChannel(listOfNewsChannel[i]['code']!);
-                    setState(() {
-                      _isChannelExpanded = false;
-                    });
-                  },
-                  name: listOfNewsChannel[i]['name']!.toUpperCase(),
                 ),
             ],
           ),
+          // ExpansionTile(
+          //   title: Text("Channel"),
+          //   onExpansionChanged: (expanded) async {
+          //     setState(() {
+          //       _isChannelExpanded = expanded;
+          //     });
+          //   },
+          //   children: [
+          //     for (int i = 0; i < listOfNewsChannel.length; i++)
+          //       dropDownList(
+          //         call: () {
+          //           Get.back();
+          //           newsController.cName.value = listOfNewsChannel[i]['code']!;
+          //           newsController.getNews();
+          //           saveSelectedChannel(listOfNewsChannel[i]['code']!);
+          //           updateNewsChannel(listOfNewsChannel[i]['code']!);
+          //           dropdownValue = listOfNewsChannel[i]['code']!;
+          //           setState(() {
+          //             _isChannelExpanded = false;
+          //           });
+          //         },
+          //         name: listOfNewsChannel[i]['name']!.toUpperCase(),
+          //       ),
+          //   ],
+          // ),
           Expanded(
             child: GetBuilder<NewsController>(
               builder: (controller) {
@@ -276,39 +325,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   ),
                                                 ),
                                               ),
-                                              Positioned(
-                                                top: 8,
-                                                right: 8,
-                                                child: IconButton(
-                                                  icon: Icon(
-                                                    // Check if the current index is bookmarked
-                                                    bookmarkedIndexes
-                                                            .contains(index)
-                                                        ? Icons.bookmark
-                                                        : Icons.bookmark_border,
-                                                    // Change the icon color to red if bookmarked
-                                                    color: bookmarkedIndexes
-                                                            .contains(index)
-                                                        ? Colors.red
-                                                        : null,
-                                                  ),
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      controller.toggleBookmark(
-                                                          index);
-                                                      // Toggle bookmark status
-                                                      if (bookmarkedIndexes
-                                                          .contains(index)) {
-                                                        bookmarkedIndexes
-                                                            .remove(index);
-                                                      } else {
-                                                        bookmarkedIndexes
-                                                            .add(index);
-                                                      }
-                                                    });
-                                                  },
-                                                ),
-                                              ),
                                             ],
                                           ),
                                           Divider(),
@@ -319,6 +335,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                               fontSize: 18,
                                             ),
                                           ),
+                                          // IconButton(
+                                          //   icon: Icon(
+                                          //     controller
+                                          //             .news[index].isBookmarked
+                                          //         ? Icons.bookmark
+                                          //         : Icons.bookmark_border,
+                                          //     color: Colors.blue,
+                                          //   ),
+                                          //   onPressed: () => setState(() {
+                                          //     controller.news[index]
+                                          //             .isBookmarked =
+                                          //         !controller
+                                          //             .news[index].isBookmarked;
+                                          //     if (controller
+                                          //         .news[index].isBookmarked) {
+                                          //       // Save to database when bookmarked
+                                          //       _saveBookmark(
+                                          //           controller.news[index]);
+                                          //     } else {
+                                          //       // Remove from database when unbookmarked (optional)
+                                          //       _removeBookmark(controller
+                                          //           .news[index]
+                                          //           .title); // Implement _removeBookmark function
+                                          //     }
+                                          //   }),
+                                          // ),
                                         ],
                                       ),
                                     ),
@@ -333,10 +375,5 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ]));
-  }
-
-  void updateNewsCategory(String selectedValue) {
-    newsController.category.value = selectedValue;
-    newsController.getNews();
   }
 }

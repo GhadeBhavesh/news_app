@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/Ex/models/article_model.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class ArticleView extends StatefulWidget {
@@ -18,9 +17,9 @@ class _ArticleViewState extends State<ArticleView> {
     return Scaffold(
         appBar: AppBar(
           title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text("Flutter"),
+              Text("Detail"),
               Text(
                 "News",
                 style:

@@ -5,10 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:news_app/model/ArticalModel.dart';
 import 'package:news_app/model/NewsModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:news_app/services/news.dart';
 
 class NewsController extends GetxController {
-  List<int> bookmarkedIndexes = [];
-  // late NewsController newsController;
   final DatabaseReference _newsRef =
       FirebaseDatabase.instance.reference().child('news');
 
@@ -42,20 +41,12 @@ class NewsController extends GetxController {
   RxString country = ''.obs;
   RxString category = ''.obs;
   RxString findNews = ''.obs;
+
   RxInt pageNum = 1.obs;
   dynamic isSwitched = false.obs;
   dynamic isPageLoading = false.obs;
   RxInt pageSize = 10.obs;
   String baseApi = "https://newsapi.org/v2/top-headlines?";
-
-  void toggleBookmark(int index) {
-    if (bookmarkedIndexes.contains(index)) {
-      bookmarkedIndexes.remove(index);
-    } else {
-      bookmarkedIndexes.add(index);
-    }
-    update(); // Call update to notify GetBuilder of changes
-  }
 
   @override
   void onInit() {

@@ -1,15 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:hidden_drawer_menu/controllers/simple_hidden_drawer_controller.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:news_app/components/home_ui.dart';
-import 'package:news_app/Ex/models/category_model.dart';
-import 'package:news_app/Ex/models/show_category.dart';
-import 'package:news_app/Ex/Home_page.dart';
+import 'package:news_app/model/category_model.dart';
+import 'package:news_app/model/show_category.dart';
+
 import 'package:news_app/pages/account_page.dart';
 import 'package:news_app/components/article_view.dart';
 import 'package:news_app/services/data.dart';
 import 'package:news_app/services/show_category_news.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class CategoryNews extends StatefulWidget {
   String name;
@@ -24,7 +23,7 @@ class _CategoryNewsState extends State<CategoryNews> {
   List<ShowCategoryModel> categoriess = [];
   List<CategoryModel> categories = [];
   int activeIndex = 0;
-  bool _loading = true;
+  // bool _loading = true;
 
   @override
   void initState() {
@@ -38,9 +37,6 @@ class _CategoryNewsState extends State<CategoryNews> {
     ShowCategoryNews showCategoryNews = ShowCategoryNews();
     await showCategoryNews.getCategoriesNews(selectedCategory);
     categoriess = showCategoryNews.categories;
-    setState(() {
-      _loading = false;
-    });
   }
 
   @override
@@ -50,6 +46,12 @@ class _CategoryNewsState extends State<CategoryNews> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => ZoomDrawer.of(context)!.toggle(),
+            icon: Icon(
+              Icons.menu,
+              color: Colors.white,
+            )),
         elevation: 0,
         backgroundColor: Colors.transparent,
         // automaticallyImplyLeading: false,
@@ -75,7 +77,6 @@ class _CategoryNewsState extends State<CategoryNews> {
         ],
       ),
       body: Container(
-        margin: const EdgeInsets.all(5),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -103,7 +104,7 @@ class _CategoryNewsState extends State<CategoryNews> {
                 height: 80,
                 child: Container(
                   margin: EdgeInsets.only(left: 10.0),
-                  height: 70,
+                  height: 100,
                   child: ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
@@ -127,7 +128,7 @@ class _CategoryNewsState extends State<CategoryNews> {
               // Existing UI Widgets
               SizedBox(
                 width: double.infinity,
-                height: 400,
+                height: 550,
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics: ClampingScrollPhysics(),

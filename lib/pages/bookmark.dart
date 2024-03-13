@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
-import 'package:news_app/pages/ViewNews.dart';
 import 'package:news_app/services/NewsController.dart';
 
 class BookmarksPage extends StatefulWidget {
@@ -19,10 +19,12 @@ class _BookmarksPageState extends State<BookmarksPage> {
   NewsController newsController = Get.put(NewsController());
   @override
   Widget build(BuildContext context) {
-    var controller;
     return Scaffold(
       appBar: AppBar(
         title: Text('Bookmarks'),
+        leading: IconButton(
+            onPressed: () => ZoomDrawer.of(context)!.toggle(),
+            icon: Icon(Icons.menu)),
       ),
       body: ListView.builder(
           itemCount: widget.bookmarkedIndexes.length,
@@ -73,7 +75,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
                               ),
                               child: Text(
                                 "${news.source.name}",
-                                style: Theme.of(context).textTheme.subtitle2,
+                                style: Theme.of(context).textTheme.titleSmall,
                               ),
                             ),
                           ),
