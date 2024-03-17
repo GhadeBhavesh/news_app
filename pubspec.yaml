@@ -64,6 +64,10 @@ dependencies:
   flutter_zoom_drawer: ^3.2.0
   badges: ^3.1.2
   hive_flutter: ^1.1.0
+  video_player: ^2.1.1
+  chewie: ^1.0.0
+  flutter_webview_plugin: ^0.4.0
+  news_api_flutter_package: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

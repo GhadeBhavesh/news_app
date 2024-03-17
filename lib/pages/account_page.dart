@@ -155,9 +155,7 @@ class _AccountState extends State<Account> {
             ),
             GestureDetector(
               onTap: () {
-                Get.to(() => TextSizePage(
-                      ref: ref,
-                    ));
+                Get.to(() => TextSizePage());
               },
               child: Padding(
                 padding: const EdgeInsets.all(16.0),

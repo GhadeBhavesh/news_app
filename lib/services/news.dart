@@ -1,30 +1,32 @@
-// import 'dart:convert';
+import 'dart:convert';
 
-// import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 
-// class News {
-//   List<ArticleModel> news = [];
+class News {
+  final String title;
+  final String videoUrl;
 
-//   Future<void> getNews() async {
-//     String url =
-//         "https://newsapi.org/v2/top-headlines?country=in&apiKey=866e37213c6b497eb3dfee12ac4e2b57";
-//     var response = await http.get(Uri.parse(url));
-//     var jsonData = jsonDecode(response.body);
+  News({required this.title, required this.videoUrl});
 
-//     if (jsonData['status'] == 'ok') {
-//       jsonData["articles"].forEach((element) {
-//         if (element["urlToImage"] != null && element['description'] != null) {
-//           ArticleModel articleModel = ArticleModel(
-//             title: element["title"],
-//             description: element["description"],
-//             url: element["url"],
-//             urlToImage: element["urlToImage"],
-//             content: element["content"],
-//             author: element["author"],
-//           );
-//           news.add(articleModel);
-//         }
-//       });
-//     }
-//   }
-// }
+  factory News.fromJson(Map<String, dynamic> json) {
+    return News(
+      title: json['title'],
+      videoUrl: json['video_url'],
+    );
+  }
+}
+
+Future<List<News>> geetNews() async {
+  final response = await http.get(Uri.parse(
+      'https://newsapi.org/v2/top-headlines?sources=cnn,abc-news,nbc-news,fox-news,cbs-news&apiKey=866e37213c6b497eb3dfee12ac4e2b57'));
+
+  if (response.statusCode == 200) {
+    List jsonResponse = json.decode(response.body)['articles'];
+    return jsonResponse
+        .where((data) => data['urlToImage'] != null)
+        .map((data) => News.fromJson(data))
+        .toList();
+  } else {
+    throw Exception('Failed to load news');
+  }
+}

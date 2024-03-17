@@ -1,65 +1,70 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import 'package:firebase_database/firebase_database.dart';
+import 'package:get/get.dart';
+import 'package:news_app/pages/HomeScreen.dart';
+import 'package:news_app/pages/account_page.dart';
+
 class TextSizePage extends StatefulWidget {
-  final DatabaseReference ref;
-
-  const TextSizePage({Key? key, required this.ref}) : super(key: key);
-
   @override
-  State<TextSizePage> createState() => _TextSizePageState();
+  _TextSizePageState createState() => _TextSizePageState();
 }
 
 class _TextSizePageState extends State<TextSizePage> {
-  String selectedSize = "Medium"; // Initial selected size
+  double _fontSize = 16.0;
+  DatabaseReference? _fontSizeRef;
 
   @override
-  // void initState() {
-  //   super.initState();
-  //   widget.ref.once().then((snapshot) {
-  //     if (snapshot.value != null) {
-  //       setState(() {
-  //         selectedSize =
-  //             snapshot.value as String; // Set saved size from database
-  //       });
-  //     }
-  //   });
-  // }
-
-  // void onSizeSelected(String size) {
-  //   setState(() {
-  //     selectedSize = size;
-  //   });
-  //   widget.ref.set(size); // Save selected size to database
-  // }
+  void initState() {
+    super.initState();
+    _fontSizeRef = FirebaseDatabase.instance.reference().child('fontSize');
+    _fontSizeRef?.onValue.listen((event) {
+      setState(() {
+        if (event.snapshot.value != null && event.snapshot.value is double) {
+          _fontSize = event.snapshot.value as double;
+        } else {
+          // Handle null value or incompatible type (e.g., set to default or log error)
+          print('Error: Unexpected data type for fontSize');
+          _fontSize = 16.0; // Or any other default value
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Text Size"),
-      ),
-      body: Center(
-          // child: Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     DropdownButton(
-          //       value: selectedSize,
-          //       items: [
-          //         DropdownMenuItem(value: "Small", child: Text("Small")),
-          //         DropdownMenuItem(value: "Medium", child: Text("Medium")),
-          //         DropdownMenuItem(value: "Large", child: Text("Large")),
-          //       ],
-          //       // onChanged: (size) => onSizeSelected(size!),
-          //     ),
-          //     // Text widget that displays the selected size
-          //     Text(
-          //       "Selected Size: $selectedSize",
-          //       style: TextStyle(fontSize: double.parse(selectedSize)),
-          //     ),
-          //   ],
-          // ),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Text Change with Slider"),
+          centerTitle: true,
+        ),
+        body: Column(children: [
+          Text(
+            "Font size",
+            style: TextStyle(
+              fontSize: _fontSize,
+            ),
           ),
+          SizedBox(
+            width: 270,
+            child: Slider(
+              value: _fontSize,
+              activeColor: Colors.black,
+              inactiveColor: Colors.grey,
+              min: 10.0,
+              max: 30.0,
+              onChanged: (value) {
+                setState(() {
+                  _fontSize = value;
+                });
+                _fontSizeRef?.set(value);
+              },
+            ),
+          ),
+        ]),
+      ),
     );
   }
 }

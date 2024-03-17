@@ -61,14 +61,6 @@ class NewsController extends GetxController {
     update();
   }
 
-  // _scrollListener() {
-  //   if (scrollController.position.pixels ==
-  //       scrollController.position.maxScrollExtent) {
-  //     isLoading.value = true;
-  //     getNews();
-  //   }
-  // }
-
   getNews({channel = '', searchKey = '', reload = false}) async {
     notFound.value = false;
 
