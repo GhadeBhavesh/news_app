@@ -68,6 +68,7 @@ dependencies:
   chewie: ^1.0.0
   flutter_webview_plugin: ^0.4.0
   news_api_flutter_package: ^1.1.0
+  provider: ^6.0.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

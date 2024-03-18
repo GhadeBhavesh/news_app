@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   NewsController newsController = Get.put(NewsController());
   final _databaseRef = FirebaseDatabase.instance.reference().child('bookmarks');
   bool _showFilterChips = false;
+
   @override
   void initState() {
     super.initState();
@@ -107,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = FavotiteProvider.of(context);
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -124,17 +127,6 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             icon: Icon(Icons.filter_list),
           ),
-          // IconButton(
-          //   onPressed: () {
-          //     newsController.country.value = '';
-          //     newsController.category.value = '';
-          //     newsController.findNews.value = '';
-          //     newsController.cName.value = '';
-          //     newsController.getNews(reload: true);
-          //     newsController.update();
-          //   },
-          //   icon: Icon(Icons.refresh),
-          // ),
           GetBuilder<NewsController>(
             builder: (controller) => Switch(
               value: controller.isSwitched == true ? true : false,
@@ -199,32 +191,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               }),
             ),
-
-          // ExpansionTile(
-          //   title: Text("Category :$dropdownValue"),
-          //   onExpansionChanged: (expanded) async {
-          //     setState(() {
-          //       _isCategoryExpanded = expanded;
-          //     });
-          //   },
-          //   children: [
-          //     for (int i = 0; i < listOfCategory.length; i++)
-          //       dropDownList(
-          //         call: () {
-          //           Get.back();
-          //           newsController.category.value = listOfCategory[i]['code']!;
-          //           newsController.getNews();
-          //           saveSelectedCategory(listOfCategory[i]['code']!);
-          //           updateNewsCategory(listOfCategory[i]['code']!);
-          //           dropdownValue = listOfCategory[i]['code']!;
-          //           setState(() {
-          //             _isCountryExpanded = false;
-          //           });
-          //         },
-          //         name: listOfCategory[i]['name']!.toUpperCase(),
-          //       ),
-          //   ],
-          // ),
           Expanded(
             child: GetBuilder<NewsController>(
               builder: (controller) {
@@ -323,6 +289,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 .fontSize -
                                                             2,
                                                     color: Colors.grey,
+                                                  ),
+                                                ),
+                                                GestureDetector(
+                                                  onTap: () => provider
+                                                      .toggleFavorite(controller
+                                                          .news[index]),
+                                                  child: Icon(
+                                                    provider.isExit(controller
+                                                            .news[index])
+                                                        ? Icons.favorite
+                                                        : Icons
+                                                            .favorite_border_outlined,
+                                                    color: Colors.red,
                                                   ),
                                                 )
                                               ],

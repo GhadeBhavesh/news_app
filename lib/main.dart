@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:news_app/auth/authentication_repository.dart';
 import 'package:news_app/components/font_size.dart';
+import 'package:news_app/model/provid.dart';
 import 'package:news_app/pages/HomeScreen.dart';
 import 'package:news_app/pages/account_page.dart';
 import 'package:news_app/pages/bookmark.dart';
@@ -41,11 +42,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'NewsApp',
-      debugShowCheckedModeBanner: false,
-      home: showHome ? WelcomeScreen() : Draw(),
-    );
+    return ChangeNotifierProvider(
+        create: (context) => FavotiteProvider(),
+        child: GetMaterialApp(
+          title: 'NewsApp',
+          debugShowCheckedModeBanner: false,
+          home: showHome ? WelcomeScreen() : Draw(),
+        ));
   }
 }
 
@@ -102,9 +105,9 @@ class _MenuScreenState extends State<MenuScreen> {
     ListItems(
         Icon(Icons.bookmark),
         Text('Bookmark'),
-        BookmarksPage(
-          bookmarkedIndexes: [],
-        )),
+        BookmarkScreen(
+            // bookmarkedIndexes: [],
+            )),
     ListItems(Icon(Icons.account_circle), Text('Account'), Account()),
   ];
 
