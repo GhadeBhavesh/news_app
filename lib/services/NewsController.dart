@@ -56,9 +56,16 @@ class NewsController extends GetxController {
   }
 
   changeTheme(value) {
-    Get.changeTheme(value == true ? ThemeData.dark() : ThemeData.light());
-    isSwitched = value;
-    update();
+    // Get.changeTheme(value == true ? ThemeData.dark() : ThemeData.light());
+    if (value = true) {
+      Get.changeTheme(ThemeData.dark());
+      isSwitched = value;
+      update();
+    } else {
+      Get.changeTheme(ThemeData.light());
+      isSwitched = value;
+      update();
+    }
   }
 
   getNews({channel = '', searchKey = '', reload = false}) async {

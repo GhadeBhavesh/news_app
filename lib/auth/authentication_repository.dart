@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:news_app/main.dart';
+import 'package:news_app/pages/onboarding_page.dart';
 import 'package:news_app/pages/welcome.dart';
 
 class AuthenticationRepository extends GetxController {
@@ -24,7 +25,7 @@ class AuthenticationRepository extends GetxController {
 
   _setInitialScreen(User? user) {
     user == null
-        ? Get.offAll(() => const WelcomeScreen())
+        ? Get.offAll(() => const OnboardingPage())
         : Get.to(() => Draw());
   }
 
@@ -37,7 +38,7 @@ class AuthenticationRepository extends GetxController {
       );
       firebaseUser.value != null
           ? Get.offAll(() => Draw())
-          : Get.to(() => const WelcomeScreen());
+          : Get.to(() => const OnboardingPage());
     } on FirebaseAuthException catch (e) {
       Get.snackbar("About user", "User message",
           backgroundColor: Colors.pink,
@@ -99,7 +100,7 @@ class AuthenticationRepository extends GetxController {
     try {
       await _auth.signOut();
       await googleSignIn.signOut();
-      Get.offAll(() => const WelcomeScreen());
+      Get.offAll(() => const OnboardingPage());
     } catch (e) {
       print(e.toString());
     }

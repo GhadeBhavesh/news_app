@@ -5,11 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:news_app/auth/authentication_repository.dart';
 import 'package:news_app/components/font_size.dart';
-import 'package:news_app/model/provid.dart';
 import 'package:news_app/pages/HomeScreen.dart';
 import 'package:news_app/pages/account_page.dart';
 import 'package:news_app/pages/bookmark.dart';
 import 'package:news_app/pages/category_Page.dart';
+import 'package:news_app/pages/onboarding_page.dart';
 import 'package:news_app/pages/videopage.dart';
 import 'package:news_app/pages/welcome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +23,7 @@ Future main() async {
       .then((value) => Get.put(AuthenticationRepository()));
   final prefs = await SharedPreferences.getInstance();
   final showHome = prefs.getBool("showHome") ?? false;
+  // await Hive.initFlutter();
 
   runApp(ChangeNotifierProvider(
       create: (context) => FontSizeProvider(),
@@ -47,7 +48,7 @@ class MyApp extends StatelessWidget {
         child: GetMaterialApp(
           title: 'NewsApp',
           debugShowCheckedModeBanner: false,
-          home: showHome ? WelcomeScreen() : Draw(),
+          home: showHome ? OnboardingPage() : Draw(),
         ));
   }
 }
@@ -102,12 +103,7 @@ class _MenuScreenState extends State<MenuScreen> {
         CategoryNews(
           name: '',
         )),
-    ListItems(
-        Icon(Icons.bookmark),
-        Text('Bookmark'),
-        BookmarkScreen(
-            // bookmarkedIndexes: [],
-            )),
+    ListItems(Icon(Icons.bookmark), Text('Bookmark'), BookmarkScreen()),
     ListItems(Icon(Icons.account_circle), Text('Account'), Account()),
   ];
 

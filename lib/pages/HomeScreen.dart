@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:news_app/components/dropDownList.dart';
 import 'package:news_app/components/font_size.dart';
 import 'package:news_app/model/utils.dart';
+import 'package:news_app/pages/NewsDetail.dart';
 import 'package:news_app/pages/ViewNews.dart';
 import 'package:news_app/pages/bookmark.dart';
 import "package:news_app/services/NewsController.dart";
@@ -215,11 +216,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: GestureDetector(
-                                    onTap: () => Get.to(
-                                      ViewNews(
-                                        newsUrl: controller.news[index].url,
-                                      ),
-                                    ),
+                                    onTap: () {
+                                      Get.to(
+                                        NewsDetailPage(
+                                          imageUrl: controller
+                                                  .news[index].urlToImage ??
+                                              '',
+                                          title: controller.news[index].title,
+                                          description: controller
+                                                  .news[index].description ??
+                                              '',
+                                          newsUrl: controller.news[index].url,
+                                        ),
+                                      );
+                                    },
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
                                         vertical: 10,
@@ -303,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             .favorite_border_outlined,
                                                     color: Colors.red,
                                                   ),
-                                                )
+                                                ),
                                               ],
                                             ),
                                           ),
